@@ -71,9 +71,9 @@ const Contact = () => {
                 <div>
                   <p className="font-medium text-slate-800">Visit Us</p>
                   <address className="text-slate-600 not-italic">
-                    123 Sleep Avenue<br />
-                    San Francisco, CA 94107<br />
-                    United States
+                    1200 rue de royan<br />
+                    H7N 0H8<br />
+                    Canada
                   </address>
                 </div>
               </div>

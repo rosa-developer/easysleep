@@ -90,7 +90,7 @@ const Footer = () => {
               <li className="flex items-start">
                 <MapPin className="h-5 w-5 text-sleep-500 mr-2 flex-shrink-0 mt-0.5" />
                 <span className="text-slate-600 text-sm">
-                  123 Sleep Street, Dreamy City, 10001
+                  1200 rue de royan, H7N 0H8, Canada
                 </span>
               </li>
               <li className="flex items-center">
