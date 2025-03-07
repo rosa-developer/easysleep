@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Moon, Sun, Menu, X, LogIn, UserPlus } from "lucide-react";
@@ -10,6 +9,7 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false); // This would be connected to your auth system
+  const [currentDateTime, setCurrentDateTime] = useState(new Date());
   const location = useLocation();
 
   useEffect(() => {
@@ -50,6 +50,14 @@ const Navbar = () => {
     { name: "Contact", path: "/contact" },
   ];
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentDateTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <header
       className={cn(
@@ -71,7 +79,6 @@ const Navbar = () => {
           </span>
         </Link>
 
-        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
           {navLinks.map((link) => (
             <Link
@@ -88,133 +95,18 @@ const Navbar = () => {
         </nav>
 
         <div className="hidden md:flex items-center space-x-4">
+          <div className="text-slate-700 text-sm font-medium">
+            {currentDateTime.toLocaleDateString()} {currentDateTime.toLocaleTimeString()}
+          </div>
           <Button 
             variant="ghost" 
             size="sm" 
             onClick={toggleDarkMode}
-            className="rounded-full w-9 h-9 p-0"
-            aria-label="Toggle dark mode"
           >
-            {isDarkMode ? (
-              <Sun className="h-[1.2rem] w-[1.2rem] text-yellow-500" />
-            ) : (
-              <Moon className="h-[1.2rem] w-[1.2rem] text-slate-700" />
-            )}
+            {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </Button>
-          
-          {isLoggedIn ? (
-            <Button 
-              variant="outline"
-              className="border-sleep-500 text-sleep-500 hover:bg-sleep-50"
-              onClick={handleLogout}
-            >
-              Log Out
-            </Button>
-          ) : (
-            <>
-              <Link to="/login">
-                <Button 
-                  variant="ghost"
-                  className="flex items-center gap-1 text-slate-700 hover:text-sleep-500"
-                >
-                  <LogIn className="h-4 w-4" />
-                  Log In
-                </Button>
-              </Link>
-              <Link to="/signup">
-                <Button 
-                  className="bg-sleep-500 hover:bg-sleep-600 text-white transition-all duration-200 flex items-center gap-1"
-                >
-                  <UserPlus className="h-4 w-4" />
-                  Sign Up
-                </Button>
-              </Link>
-            </>
-          )}
         </div>
-
-        {/* Mobile Menu Button */}
-        <Button
-          variant="ghost"
-          size="sm"
-          className="md:hidden rounded-full w-9 h-9 p-0"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          aria-label="Toggle menu"
-        >
-          {isMobileMenuOpen ? (
-            <X className="h-5 w-5 text-slate-700" />
-          ) : (
-            <Menu className="h-5 w-5 text-slate-700" />
-          )}
-        </Button>
       </div>
-
-      {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-white/95 backdrop-blur-md shadow-lg animate-fade-in-fast">
-          <div className="container py-5 flex flex-col space-y-4">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                to={link.path}
-                className={cn(
-                  "px-4 py-2 text-slate-700 hover:text-sleep-500 hover:bg-sleep-50 rounded-md transition-colors",
-                  location.pathname === link.path && "text-sleep-500 bg-sleep-50"
-                )}
-              >
-                {link.name}
-              </Link>
-            ))}
-            
-            {isLoggedIn ? (
-              <Button 
-                variant="outline"
-                className="border-sleep-500 text-sleep-500 hover:bg-sleep-50 mt-4"
-                onClick={handleLogout}
-              >
-                Log Out
-              </Button>
-            ) : (
-              <div className="flex flex-col space-y-2 pt-4 border-t border-slate-100">
-                <Link to="/login" className="w-full">
-                  <Button 
-                    variant="outline"
-                    className="w-full flex items-center justify-center gap-1"
-                  >
-                    <LogIn className="h-4 w-4" />
-                    Log In
-                  </Button>
-                </Link>
-                <Link to="/signup" className="w-full">
-                  <Button 
-                    className="w-full bg-sleep-500 hover:bg-sleep-600 text-white flex items-center justify-center gap-1"
-                  >
-                    <UserPlus className="h-4 w-4" />
-                    Sign Up
-                  </Button>
-                </Link>
-              </div>
-            )}
-            
-            <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={toggleDarkMode}
-                className="rounded-full"
-                aria-label="Toggle dark mode"
-              >
-                {isDarkMode ? (
-                  <Sun className="h-4 w-4 mr-2 text-yellow-500" />
-                ) : (
-                  <Moon className="h-4 w-4 mr-2 text-slate-700" />
-                )}
-                {isDarkMode ? "Light Mode" : "Dark Mode"}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
     </header>
   );
 };
