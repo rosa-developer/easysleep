@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Moon, Sun, Menu, X } from "lucide-react";
+import { Moon, Sun, Menu, X, LogIn, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -9,6 +9,7 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // This would be connected to your auth system
   const location = useLocation();
 
   useEffect(() => {
@@ -34,6 +35,11 @@ const Navbar = () => {
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
     document.documentElement.classList.toggle("dark");
+  };
+
+  const handleLogout = () => {
+    // This would be connected to your auth system
+    setIsLoggedIn(false);
   };
 
   const navLinks = [
@@ -95,11 +101,36 @@ const Navbar = () => {
               <Moon className="h-[1.2rem] w-[1.2rem] text-slate-700" />
             )}
           </Button>
-          <Button 
-            className="bg-sleep-500 hover:bg-sleep-600 text-white transition-all duration-200"
-          >
-            Get Started
-          </Button>
+          
+          {isLoggedIn ? (
+            <Button 
+              variant="outline"
+              className="border-sleep-500 text-sleep-500 hover:bg-sleep-50"
+              onClick={handleLogout}
+            >
+              Log Out
+            </Button>
+          ) : (
+            <>
+              <Link to="/login">
+                <Button 
+                  variant="ghost"
+                  className="flex items-center gap-1 text-slate-700 hover:text-sleep-500"
+                >
+                  <LogIn className="h-4 w-4" />
+                  Log In
+                </Button>
+              </Link>
+              <Link to="/signup">
+                <Button 
+                  className="bg-sleep-500 hover:bg-sleep-600 text-white transition-all duration-200 flex items-center gap-1"
+                >
+                  <UserPlus className="h-4 w-4" />
+                  Sign Up
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -134,6 +165,37 @@ const Navbar = () => {
                 {link.name}
               </Link>
             ))}
+            
+            {isLoggedIn ? (
+              <Button 
+                variant="outline"
+                className="border-sleep-500 text-sleep-500 hover:bg-sleep-50 mt-4"
+                onClick={handleLogout}
+              >
+                Log Out
+              </Button>
+            ) : (
+              <div className="flex flex-col space-y-2 pt-4 border-t border-slate-100">
+                <Link to="/login" className="w-full">
+                  <Button 
+                    variant="outline"
+                    className="w-full flex items-center justify-center gap-1"
+                  >
+                    <LogIn className="h-4 w-4" />
+                    Log In
+                  </Button>
+                </Link>
+                <Link to="/signup" className="w-full">
+                  <Button 
+                    className="w-full bg-sleep-500 hover:bg-sleep-600 text-white flex items-center justify-center gap-1"
+                  >
+                    <UserPlus className="h-4 w-4" />
+                    Sign Up
+                  </Button>
+                </Link>
+              </div>
+            )}
+            
             <div className="flex items-center justify-between pt-4 border-t border-slate-100">
               <Button
                 variant="ghost"
@@ -148,12 +210,6 @@ const Navbar = () => {
                   <Moon className="h-4 w-4 mr-2 text-slate-700" />
                 )}
                 {isDarkMode ? "Light Mode" : "Dark Mode"}
-              </Button>
-              <Button 
-                className="bg-sleep-500 hover:bg-sleep-600 text-white transition-all duration-200"
-                size="sm"
-              >
-                Get Started
               </Button>
             </div>
           </div>
