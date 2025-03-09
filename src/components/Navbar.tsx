@@ -1,8 +1,10 @@
-import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Moon, Sun, Menu, X, LogIn, UserPlus } from "lucide-react";
+
+import { useState, useEffect, useRef } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Moon, Sun, Menu, X, LogIn, UserPlus, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -11,6 +13,8 @@ const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // This would be connected to your auth system
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
   const location = useLocation();
+  const navigate = useNavigate();
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -32,6 +36,36 @@ const Navbar = () => {
     setIsMobileMenuOpen(false);
   }, [location]);
 
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    if (isMobileMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMobileMenuOpen]);
+
+  // Prevent scrolling when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isMobileMenuOpen]);
+
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
     document.documentElement.classList.toggle("dark");
@@ -40,6 +74,8 @@ const Navbar = () => {
   const handleLogout = () => {
     // This would be connected to your auth system
     setIsLoggedIn(false);
+    toast.success("You have been logged out");
+    navigate("/");
   };
 
   const navLinks = [
@@ -79,6 +115,7 @@ const Navbar = () => {
           </span>
         </Link>
 
+        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
           {navLinks.map((link) => (
             <Link
@@ -105,8 +142,151 @@ const Navbar = () => {
           >
             {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </Button>
+
+          {/* Authentication Controls */}
+          {isLoggedIn ? (
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="flex items-center gap-1"
+                onClick={() => navigate("/profile")}
+              >
+                <User className="w-4 h-4 mr-1" />
+                Profile
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-1"
+                onClick={handleLogout}
+              >
+                <LogOut className="w-4 h-4 mr-1" />
+                Log out
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="flex items-center gap-1"
+                onClick={() => navigate("/login")}
+              >
+                <LogIn className="w-4 h-4 mr-1" />
+                Log in
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-1"
+                onClick={() => navigate("/signup")}
+              >
+                <UserPlus className="w-4 h-4 mr-1" />
+                Sign up
+              </Button>
+            </div>
+          )}
         </div>
+
+        {/* Mobile Menu Button */}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="md:hidden"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+        >
+          {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </Button>
       </div>
+
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div
+          ref={mobileMenuRef}
+          className="md:hidden fixed inset-0 top-16 bg-white z-40 p-4 shadow-lg overflow-y-auto"
+        >
+          <nav className="flex flex-col space-y-4 pt-4">
+            {navLinks.map((link) => (
+              <Link
+                key={link.name}
+                to={link.path}
+                className={cn(
+                  "text-slate-700 py-2 px-4 rounded-md hover:bg-slate-100 hover:text-sleep-500 transition-colors",
+                  location.pathname === link.path && "bg-slate-100 text-sleep-500"
+                )}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                {link.name}
+              </Link>
+            ))}
+            <div className="border-t border-gray-200 my-2 pt-2"></div>
+            {isLoggedIn ? (
+              <>
+                <Button
+                  variant="ghost"
+                  className="justify-start"
+                  onClick={() => {
+                    navigate("/profile");
+                    setIsMobileMenuOpen(false);
+                  }}
+                >
+                  <User className="w-4 h-4 mr-2" />
+                  Profile
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="justify-start"
+                  onClick={() => {
+                    handleLogout();
+                    setIsMobileMenuOpen(false);
+                  }}
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Log out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="ghost"
+                  className="justify-start"
+                  onClick={() => {
+                    navigate("/login");
+                    setIsMobileMenuOpen(false);
+                  }}
+                >
+                  <LogIn className="w-4 h-4 mr-2" />
+                  Log in
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="justify-start"
+                  onClick={() => {
+                    navigate("/signup");
+                    setIsMobileMenuOpen(false);
+                  }}
+                >
+                  <UserPlus className="w-4 h-4 mr-2" />
+                  Sign up
+                </Button>
+              </>
+            )}
+            <Button 
+              variant="ghost" 
+              className="justify-start" 
+              onClick={toggleDarkMode}
+            >
+              {isDarkMode ? <Sun className="w-4 h-4 mr-2" /> : <Moon className="w-4 h-4 mr-2" />}
+              {isDarkMode ? "Light Mode" : "Dark Mode"}
+            </Button>
+            <div className="text-sm text-gray-500 py-2 px-4">
+              {currentDateTime.toLocaleDateString()} {currentDateTime.toLocaleTimeString()}
+            </div>
+          </nav>
+        </div>
+      )}
     </header>
   );
 };
