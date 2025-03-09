@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from 'sonner';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import SectionTitle from "@/components/SectionTitle";
+import { authenticateUser } from '@/services/userService';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -23,21 +24,37 @@ const Login = () => {
     setIsLoading(true);
     
     try {
-      // This is a stub for future integration with a backend service
-      // For now we'll just simulate a successful login
+      // Attempt to authenticate the user
+      await authenticateUser(email, password);
       
-      setTimeout(() => {
-        toast.success("Login successful!");
-        navigate('/');
-        setIsLoading(false);
-      }, 1000);
+      // If successful, set user as logged in
+      if (rememberMe) {
+        // Store email in localStorage if "Remember me" is checked
+        localStorage.setItem('rememberedEmail', email);
+      }
       
+      // Set logged in user in sessionStorage
+      sessionStorage.setItem('isLoggedIn', 'true');
+      sessionStorage.setItem('userEmail', email);
+      
+      toast.success("Login successful!");
+      navigate('/');
     } catch (error) {
       console.error("Login error:", error);
-      toast.error("Invalid email or password");
+      toast.error(error instanceof Error ? error.message : "Invalid email or password");
+    } finally {
       setIsLoading(false);
     }
   };
+
+  // Check for remembered email when component mounts
+  React.useEffect(() => {
+    const rememberedEmail = localStorage.getItem('rememberedEmail');
+    if (rememberedEmail) {
+      setEmail(rememberedEmail);
+      setRememberMe(true);
+    }
+  }, []);
 
   return (
     <div className="container-custom py-16 flex justify-center items-center">

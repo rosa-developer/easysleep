@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { toast } from 'sonner';
 import { Mail, ArrowLeft } from 'lucide-react';
 import SectionTitle from "@/components/SectionTitle";
+import { requestPasswordReset } from '@/services/userService';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -19,18 +20,15 @@ const ForgotPassword = () => {
     setIsLoading(true);
     
     try {
-      // This is a stub for future integration with a backend service
-      // For now we'll just simulate a successful password reset email
+      // Request password reset from MongoDB
+      await requestPasswordReset(email);
       
-      setTimeout(() => {
-        setIsSubmitted(true);
-        toast.success("Password reset email sent!");
-        setIsLoading(false);
-      }, 1000);
-      
+      setIsSubmitted(true);
+      toast.success("Password reset email sent!");
     } catch (error) {
       console.error("Password reset error:", error);
-      toast.error("Failed to send reset email. Please try again.");
+      toast.error(error instanceof Error ? error.message : "Failed to send reset email. Please try again.");
+    } finally {
       setIsLoading(false);
     }
   };

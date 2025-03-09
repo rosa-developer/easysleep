@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { toast } from 'sonner';
 import { Eye, EyeOff, User, Mail, Lock } from 'lucide-react';
 import SectionTitle from "@/components/SectionTitle";
+import { createUser } from '@/services/userService';
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
@@ -29,18 +30,19 @@ const SignUp = () => {
     setIsLoading(true);
     
     try {
-      // This is a stub for future integration with a backend service
-      // For now we'll just simulate a successful signup
+      // Create the user in MongoDB
+      await createUser({
+        name,
+        email,
+        password
+      });
       
-      setTimeout(() => {
-        toast.success("Account created successfully!");
-        navigate('/login');
-        setIsLoading(false);
-      }, 1000);
-      
+      toast.success("Account created successfully!");
+      navigate('/login');
     } catch (error) {
       console.error("Signup error:", error);
-      toast.error("Failed to create account. Please try again.");
+      toast.error(error instanceof Error ? error.message : "Failed to create account. Please try again.");
+    } finally {
       setIsLoading(false);
     }
   };
