@@ -10,9 +10,9 @@ export const connectToMongoDB = async () => {
   }
 
   try {
-    // You should replace this URL with your actual MongoDB connection string
-    // For now, we'll use a placeholder
-    const MONGODB_URI = "mongodb+srv://<username>:<password>@<cluster>.mongodb.net/<database>?retryWrites=true&w=majority";
+    // Using environment variable or a default local MongoDB connection
+    // For development, we'll use a local MongoDB instance
+    const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/easysleep";
     
     if (!MONGODB_URI) {
       throw new Error('MongoDB URI is not defined');
