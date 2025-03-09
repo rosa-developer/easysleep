@@ -94,6 +94,18 @@ const Navbar = () => {
     return () => clearInterval(timer);
   }, []);
 
+  const formattedDateTime = () => {
+    const options: Intl.DateTimeFormatOptions = { 
+      weekday: 'short',
+      month: 'short', 
+      day: 'numeric',
+      hour: '2-digit', 
+      minute: '2-digit',
+      second: '2-digit'
+    };
+    return currentDateTime.toLocaleString(undefined, options);
+  };
+
   return (
     <header
       className={cn(
@@ -132,8 +144,8 @@ const Navbar = () => {
         </nav>
 
         <div className="hidden md:flex items-center space-x-4">
-          <div className="text-slate-700 text-sm font-medium">
-            {currentDateTime.toLocaleDateString()} {currentDateTime.toLocaleTimeString()}
+          <div className="text-slate-700 text-sm font-medium bg-slate-50 px-3 py-1 rounded-md">
+            {formattedDateTime()}
           </div>
           <Button 
             variant="ghost" 
@@ -281,8 +293,8 @@ const Navbar = () => {
               {isDarkMode ? <Sun className="w-4 h-4 mr-2" /> : <Moon className="w-4 h-4 mr-2" />}
               {isDarkMode ? "Light Mode" : "Dark Mode"}
             </Button>
-            <div className="text-sm text-gray-500 py-2 px-4">
-              {currentDateTime.toLocaleDateString()} {currentDateTime.toLocaleTimeString()}
+            <div className="text-sm bg-slate-50 p-2 rounded-md my-2">
+              {formattedDateTime()}
             </div>
           </nav>
         </div>
