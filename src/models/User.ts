@@ -1,30 +1,12 @@
 
-import mongoose from 'mongoose';
+// User model interface for SQL Server
+export interface UserModel {
+  id: number;
+  name: string;
+  email: string;
+  password: string;
+  createdAt: Date;
+}
 
-// Define the User schema
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'Name is required'],
-  },
-  email: {
-    type: String,
-    required: [true, 'Email is required'],
-    unique: true,
-    match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email'],
-  },
-  password: {
-    type: String,
-    required: [true, 'Password is required'],
-    minlength: [6, 'Password should be at least 6 characters'],
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+export default UserModel;
 
-// Only compile the model if it hasn't been compiled before
-const User = mongoose.models.User || mongoose.model('User', userSchema);
-
-export default User;

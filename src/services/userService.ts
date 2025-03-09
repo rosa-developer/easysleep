@@ -1,6 +1,6 @@
 
-import User from '../models/User';
-import { connectToMongoDB } from '../utils/mongodb';
+import { connectToSqlServer } from '../utils/sqlServer';
+import sql from 'mssql';
 
 export interface UserData {
   name?: string;
@@ -8,22 +8,41 @@ export interface UserData {
   password: string;
 }
 
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+  password?: string;
+  createdAt: Date;
+}
+
 export const createUser = async (userData: UserData) => {
   try {
-    await connectToMongoDB();
+    const pool = await connectToSqlServer();
     
     // Check if user already exists
-    const existingUser = await User.findOne({ email: userData.email });
-    if (existingUser) {
+    const userCheck = await pool.request()
+      .input('email', sql.VarChar, userData.email)
+      .query('SELECT * FROM Users WHERE email = @email');
+    
+    if (userCheck.recordset.length > 0) {
       throw new Error('User already exists with this email');
     }
     
     // Create new user
-    const user = new User(userData);
-    await user.save();
+    const result = await pool.request()
+      .input('name', sql.VarChar, userData.name || '')
+      .input('email', sql.VarChar, userData.email)
+      .input('password', sql.VarChar, userData.password)
+      .input('createdAt', sql.DateTime, new Date())
+      .query(`
+        INSERT INTO Users (name, email, password, createdAt)
+        OUTPUT INSERTED.*
+        VALUES (@name, @email, @password, @createdAt)
+      `);
     
     // Return user without password
-    const newUser = user.toObject();
+    const newUser = result.recordset[0];
     delete newUser.password;
     
     return newUser;
@@ -35,10 +54,14 @@ export const createUser = async (userData: UserData) => {
 
 export const authenticateUser = async (email: string, password: string) => {
   try {
-    await connectToMongoDB();
+    const pool = await connectToSqlServer();
     
     // Find user by email
-    const user = await User.findOne({ email });
+    const result = await pool.request()
+      .input('email', sql.VarChar, email)
+      .query('SELECT * FROM Users WHERE email = @email');
+    
+    const user = result.recordset[0];
     
     // If user doesn't exist or password doesn't match
     if (!user || user.password !== password) {
@@ -46,7 +69,7 @@ export const authenticateUser = async (email: string, password: string) => {
     }
     
     // Return user without password
-    const authenticatedUser = user.toObject();
+    const authenticatedUser = { ...user };
     delete authenticatedUser.password;
     
     return authenticatedUser;
@@ -58,11 +81,14 @@ export const authenticateUser = async (email: string, password: string) => {
 
 export const requestPasswordReset = async (email: string) => {
   try {
-    await connectToMongoDB();
+    const pool = await connectToSqlServer();
     
     // Check if user exists
-    const user = await User.findOne({ email });
-    if (!user) {
+    const result = await pool.request()
+      .input('email', sql.VarChar, email)
+      .query('SELECT * FROM Users WHERE email = @email');
+    
+    if (result.recordset.length === 0) {
       throw new Error('No user found with this email');
     }
     
@@ -78,3 +104,4 @@ export const requestPasswordReset = async (email: string) => {
     throw error;
   }
 };
+
