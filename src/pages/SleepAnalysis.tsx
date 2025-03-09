@@ -1,14 +1,81 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import SectionTitle from "@/components/SectionTitle";
-import { Activity, BarChart3, Clock, Moon, RefreshCw, Zap } from "lucide-react";
+import { 
+  Activity, BarChart3, Clock, Moon, RefreshCw, Zap, 
+  BedDouble, Calendar, ChevronDown, ChevronUp, ArrowRight
+} from "lucide-react";
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar, Legend, LineChart, Line } from "recharts";
+
+// Sample sleep data
+const weeklyData = [
+  { day: "Mon", hours: 6.2, efficiency: 78, deep: 22, light: 48, rem: 30 },
+  { day: "Tue", hours: 7.1, efficiency: 85, deep: 24, light: 45, rem: 31 },
+  { day: "Wed", hours: 6.8, efficiency: 82, deep: 21, light: 49, rem: 30 },
+  { day: "Thu", hours: 7.5, efficiency: 88, deep: 26, light: 44, rem: 30 },
+  { day: "Fri", hours: 5.9, efficiency: 72, deep: 19, light: 51, rem: 30 },
+  { day: "Sat", hours: 8.2, efficiency: 90, deep: 28, light: 42, rem: 30 },
+  { day: "Sun", hours: 7.8, efficiency: 86, deep: 25, light: 45, rem: 30 },
+];
+
+// Sleep stages data
+const sleepStagesData = [
+  { name: "Deep Sleep", value: 25, color: "#0D47A1" },
+  { name: "Light Sleep", value: 45, color: "#42A5F5" },
+  { name: "REM Sleep", value: 30, color: "#90CAF9" },
+];
+
+// Monthly sleep duration trend
+const monthlyTrendData = [
+  { date: "Jan", avgDuration: 6.5 },
+  { date: "Feb", avgDuration: 6.8 },
+  { date: "Mar", avgDuration: 7.0 },
+  { date: "Apr", avgDuration: 7.2 },
+  { date: "May", avgDuration: 7.1 },
+  { date: "Jun", avgDuration: 6.9 },
+];
 
 const SleepAnalysis = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [expandedSections, setExpandedSections] = useState({
+    insights: true,
+    stages: false,
+    factors: false
+  });
+
+  const toggleSection = (section: keyof typeof expandedSections) => {
+    setExpandedSections({
+      ...expandedSections,
+      [section]: !expandedSections[section]
+    });
+  };
+
+  // Calculate sleep score
+  const calculateSleepScore = () => {
+    const latestData = weeklyData[weeklyData.length - 1];
+    // Weight: hours (40%), efficiency (40%), deep sleep percentage (20%)
+    const hoursScore = Math.min(100, (latestData.hours / 8) * 100) * 0.4;
+    const efficiencyScore = latestData.efficiency * 0.4;
+    const deepSleepScore = (latestData.deep / 25) * 100 * 0.2;
+    return Math.round(hoursScore + efficiencyScore + deepSleepScore);
+  };
+
+  const sleepScore = calculateSleepScore();
+  
+  // Get sleep quality text
+  const getSleepQualityText = () => {
+    if (sleepScore >= 85) return "Excellent";
+    if (sleepScore >= 70) return "Good";
+    if (sleepScore >= 60) return "Fair";
+    return "Poor";
+  };
 
   useEffect(() => {
-    // Simulate loading
+    // Simulate loading data
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 500);
@@ -34,10 +101,391 @@ const SleepAnalysis = () => {
             <p className="text-lg text-slate-600 mb-8 leading-relaxed">
               Understand your sleep patterns like never before with our comprehensive sleep analysis tools. Gain insights into your sleep quality and make informed decisions for better rest.
             </p>
-            <Button className="bg-sleep-500 hover:bg-sleep-600 text-white px-6 py-6 rounded-md transition-all duration-300">
-              Start Your Analysis
-            </Button>
           </div>
+        </div>
+      </section>
+      
+      {/* Interactive Analysis Dashboard */}
+      <section className="py-10 bg-white">
+        <div className="container-custom">
+          <Tabs defaultValue="dashboard" className="w-full">
+            <TabsList className="grid w-full md:w-auto grid-cols-3 mb-8">
+              <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+              <TabsTrigger value="trends">Trends</TabsTrigger>
+              <TabsTrigger value="insights">Insights</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="dashboard" className="animate-fade-in">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                {/* Sleep Score Card */}
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg font-medium">Sleep Score</CardTitle>
+                    <CardDescription>Last night's sleep quality</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-col items-center">
+                      <div className="relative w-32 h-32 flex items-center justify-center">
+                        <svg className="w-full h-full" viewBox="0 0 100 100">
+                          <circle 
+                            className="text-slate-100" 
+                            strokeWidth="8" 
+                            stroke="currentColor" 
+                            fill="transparent" 
+                            r="40" 
+                            cx="50" 
+                            cy="50" 
+                          />
+                          <circle 
+                            className="text-sleep-500" 
+                            strokeWidth="8" 
+                            strokeDasharray={`${sleepScore * 2.51} 251`}
+                            strokeLinecap="round" 
+                            stroke="currentColor" 
+                            fill="transparent" 
+                            r="40" 
+                            cx="50" 
+                            cy="50" 
+                          />
+                        </svg>
+                        <span className="absolute text-3xl font-bold text-sleep-700">{sleepScore}</span>
+                      </div>
+                      <span className="mt-2 text-lg font-medium text-sleep-600">{getSleepQualityText()}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                {/* Sleep Duration Card */}
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg font-medium">Sleep Duration</CardTitle>
+                    <CardDescription>Hours slept</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-col">
+                      <div className="flex items-end mb-2">
+                        <span className="text-3xl font-bold text-slate-800">
+                          {weeklyData[weeklyData.length - 1].hours}
+                        </span>
+                        <span className="ml-1 text-slate-600">hours</span>
+                      </div>
+                      <Progress 
+                        className="h-2 mt-2" 
+                        value={Math.min(100, (weeklyData[weeklyData.length - 1].hours / 9) * 100)} 
+                      />
+                      <div className="flex justify-between text-xs text-slate-500 mt-1">
+                        <span>0h</span>
+                        <span>Recommended: 7-9h</span>
+                      </div>
+                      <div className="flex items-center mt-4">
+                        <span className="text-sm text-slate-600 flex items-center">
+                          <Clock className="h-4 w-4 mr-1" />
+                          11:30 PM - 7:15 AM
+                        </span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                {/* Sleep Efficiency Card */}
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg font-medium">Sleep Efficiency</CardTitle>
+                    <CardDescription>Time actually sleeping</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-col">
+                      <div className="flex items-end mb-2">
+                        <span className="text-3xl font-bold text-slate-800">
+                          {weeklyData[weeklyData.length - 1].efficiency}%
+                        </span>
+                      </div>
+                      <Progress 
+                        className="h-2 mt-2" 
+                        value={weeklyData[weeklyData.length - 1].efficiency} 
+                      />
+                      <div className="flex justify-between text-xs text-slate-500 mt-1">
+                        <span>Poor</span>
+                        <span>Excellent</span>
+                      </div>
+                      <div className="flex items-center mt-4">
+                        <span className="text-sm text-slate-600 flex items-center">
+                          <Activity className="h-4 w-4 mr-1" />
+                          5 awakenings
+                        </span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+              
+              {/* Sleep Stages */}
+              <Card className="mb-8">
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <CardTitle className="text-lg font-medium">Sleep Stages</CardTitle>
+                      <CardDescription>Distribution of your sleep cycles</CardDescription>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => toggleSection('stages')}
+                      className="ml-2"
+                    >
+                      {expandedSections.stages ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+                    </Button>
+                  </div>
+                </CardHeader>
+                {expandedSections.stages && (
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div>
+                        <ResponsiveContainer width="100%" height={200}>
+                          <BarChart data={sleepStagesData} layout="vertical">
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis type="number" domain={[0, 100]} />
+                            <YAxis dataKey="name" type="category" />
+                            <Tooltip 
+                              formatter={(value) => [`${value}%`, 'Percentage']}
+                            />
+                            <Bar dataKey="value" fill={(entry) => entry.color} barSize={30} />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                      
+                      <div className="flex flex-col justify-center">
+                        <div className="space-y-4">
+                          <div>
+                            <h4 className="text-sm font-semibold flex items-center">
+                              <div className="w-3 h-3 bg-[#0D47A1] rounded-full mr-2"></div>
+                              Deep Sleep (25%)
+                            </h4>
+                            <p className="text-sm text-slate-600 ml-5">
+                              Crucial for physical recovery and memory consolidation
+                            </p>
+                          </div>
+                          
+                          <div>
+                            <h4 className="text-sm font-semibold flex items-center">
+                              <div className="w-3 h-3 bg-[#42A5F5] rounded-full mr-2"></div>
+                              Light Sleep (45%)
+                            </h4>
+                            <p className="text-sm text-slate-600 ml-5">
+                              Transitional sleep, easier to wake from
+                            </p>
+                          </div>
+                          
+                          <div>
+                            <h4 className="text-sm font-semibold flex items-center">
+                              <div className="w-3 h-3 bg-[#90CAF9] rounded-full mr-2"></div>
+                              REM Sleep (30%)
+                            </h4>
+                            <p className="text-sm text-slate-600 ml-5">
+                              Important for cognitive functions and dreaming
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                )}
+              </Card>
+              
+              {/* Weekly Sleep Graph */}
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg font-medium">Weekly Sleep Graph</CardTitle>
+                  <CardDescription>Last 7 days of sleep data</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <AreaChart data={weeklyData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="colorHours" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#1E40AF" stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor="#1E40AF" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <XAxis dataKey="day" />
+                      <YAxis domain={[0, 10]} />
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <Tooltip />
+                      <Area 
+                        type="monotone" 
+                        dataKey="hours" 
+                        stroke="#1E40AF" 
+                        fillOpacity={1} 
+                        fill="url(#colorHours)"
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="trends" className="animate-fade-in">
+              <div className="grid grid-cols-1 gap-6">
+                {/* Monthly Trends */}
+                <Card className="mb-8">
+                  <CardHeader>
+                    <CardTitle className="text-lg font-medium">Monthly Sleep Duration Trend</CardTitle>
+                    <CardDescription>Average hours slept each month</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <LineChart data={monthlyTrendData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="date" />
+                        <YAxis domain={[5, 9]} />
+                        <Tooltip />
+                        <Legend />
+                        <Line 
+                          type="monotone" 
+                          dataKey="avgDuration" 
+                          name="Avg. Sleep Duration (hours)" 
+                          stroke="#1E40AF" 
+                          activeDot={{ r: 8 }} 
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+                
+                {/* Sleep Factors */}
+                <Card>
+                  <CardHeader className="pb-2">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <CardTitle className="text-lg font-medium">Sleep Factors</CardTitle>
+                        <CardDescription>Environmental and lifestyle factors affecting your sleep</CardDescription>
+                      </div>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => toggleSection('factors')}
+                        className="ml-2"
+                      >
+                        {expandedSections.factors ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  {expandedSections.factors && (
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div className="p-4 rounded-lg bg-slate-50">
+                          <h4 className="text-sm font-semibold flex items-center mb-2">
+                            <BedDouble className="h-4 w-4 mr-2 text-sleep-500" />
+                            Bedroom Environment
+                          </h4>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="bg-white p-3 rounded-md shadow-sm">
+                              <div className="text-xs text-slate-500">Temperature</div>
+                              <div className="font-medium">68°F (Optimal)</div>
+                            </div>
+                            <div className="bg-white p-3 rounded-md shadow-sm">
+                              <div className="text-xs text-slate-500">Humidity</div>
+                              <div className="font-medium">45% (Optimal)</div>
+                            </div>
+                            <div className="bg-white p-3 rounded-md shadow-sm">
+                              <div className="text-xs text-slate-500">Noise Level</div>
+                              <div className="font-medium">Low (Optimal)</div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="p-4 rounded-lg bg-slate-50">
+                          <h4 className="text-sm font-semibold flex items-center mb-2">
+                            <Calendar className="h-4 w-4 mr-2 text-sleep-500" />
+                            Daily Habits
+                          </h4>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="bg-white p-3 rounded-md shadow-sm">
+                              <div className="text-xs text-slate-500">Screen Time Before Bed</div>
+                              <div className="font-medium text-amber-500">45 min (Reduce)</div>
+                            </div>
+                            <div className="bg-white p-3 rounded-md shadow-sm">
+                              <div className="text-xs text-slate-500">Caffeine Consumption</div>
+                              <div className="font-medium">4+ hours before bed (Good)</div>
+                            </div>
+                            <div className="bg-white p-3 rounded-md shadow-sm">
+                              <div className="text-xs text-slate-500">Exercise</div>
+                              <div className="font-medium">6+ hours before bed (Good)</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  )}
+                </Card>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="insights" className="animate-fade-in">
+              <Card>
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <CardTitle className="text-lg font-medium">Personalized Sleep Insights</CardTitle>
+                      <CardDescription>Key observations and recommendations</CardDescription>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => toggleSection('insights')}
+                      className="ml-2"
+                    >
+                      {expandedSections.insights ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+                    </Button>
+                  </div>
+                </CardHeader>
+                {expandedSections.insights && (
+                  <CardContent>
+                    <div className="space-y-6">
+                      <div className="p-4 rounded-lg border border-sleep-100 bg-sleep-50">
+                        <h3 className="text-base font-semibold mb-2 text-sleep-700">Your sleep patterns show signs of inconsistency</h3>
+                        <p className="text-sm text-slate-600 mb-3">
+                          Your bedtime varies by more than 1 hour across the week, which can disrupt your circadian rhythm.
+                        </p>
+                        <div className="bg-white p-3 rounded-md shadow-sm">
+                          <h4 className="text-sm font-medium mb-1 text-sleep-600">Recommendation</h4>
+                          <p className="text-sm text-slate-600">
+                            Try to maintain a consistent sleep schedule, going to bed and waking up at similar times each day, even on weekends.
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="p-4 rounded-lg border border-sleep-100 bg-sleep-50">
+                        <h3 className="text-base font-semibold mb-2 text-sleep-700">Your deep sleep percentage is slightly below optimal</h3>
+                        <p className="text-sm text-slate-600 mb-3">
+                          You're getting about 22% deep sleep, while 23-27% is considered optimal for your age group.
+                        </p>
+                        <div className="bg-white p-3 rounded-md shadow-sm">
+                          <h4 className="text-sm font-medium mb-1 text-sleep-600">Recommendation</h4>
+                          <p className="text-sm text-slate-600">
+                            Consider regular physical activity earlier in the day and reducing alcohol consumption to improve deep sleep quality.
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="p-4 rounded-lg border border-sleep-100 bg-sleep-50">
+                        <h3 className="text-base font-semibold mb-2 text-sleep-700">Your sleep seems disrupted during early morning hours</h3>
+                        <p className="text-sm text-slate-600 mb-3">
+                          Data shows multiple brief awakenings between 4-6 AM, which may be impacting your overall sleep quality.
+                        </p>
+                        <div className="bg-white p-3 rounded-md shadow-sm">
+                          <h4 className="text-sm font-medium mb-1 text-sleep-600">Recommendation</h4>
+                          <p className="text-sm text-slate-600">
+                            Ensure your bedroom is dark and quiet. Consider using blackout curtains or a white noise machine to minimize disturbances.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                )}
+              </Card>
+            </TabsContent>
+          </Tabs>
         </div>
       </section>
       
@@ -80,174 +528,6 @@ const SleepAnalysis = () => {
               <p className="text-slate-600">
                 Track your sleep patterns over time to identify trends, improvements, and areas that need attention.
               </p>
-            </div>
-          </div>
-        </div>
-      </section>
-      
-      {/* How It Works Section */}
-      <section className="py-20 bg-slate-50">
-        <div className="container-custom">
-          <SectionTitle 
-            pretitle="The Process"
-            title="How Sleep Analysis Works"
-            description="Our simple yet powerful sleep analysis process helps you understand and improve your sleep quality in just a few steps."
-            centered={true}
-          />
-          
-          <div className="mt-16 relative">
-            {/* Connection line */}
-            <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-sleep-200 hidden md:block"></div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-              {/* Step 1 */}
-              <div className="relative animate-fade-in">
-                <div className="md:text-right">
-                  <div className="md:hidden w-12 h-12 mb-4 flex items-center justify-center rounded-full bg-sleep-500 text-white font-bold">
-                    1
-                  </div>
-                  <h3 className="text-2xl font-bold mb-3 text-slate-800">Data Collection</h3>
-                  <p className="text-slate-600 mb-4">
-                    Our sensors accurately collect data while you sleep, including movement, heart rate, and environmental factors.
-                  </p>
-                </div>
-                <div className="hidden md:block absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-sleep-500 text-white flex items-center justify-center font-bold">
-                  1
-                </div>
-              </div>
-              
-              {/* Empty space for alignment */}
-              <div className="hidden md:block"></div>
-              
-              {/* Empty space for alignment */}
-              <div className="hidden md:block"></div>
-              
-              {/* Step 2 */}
-              <div className="relative animate-fade-in delay-100">
-                <div>
-                  <div className="md:hidden w-12 h-12 mb-4 flex items-center justify-center rounded-full bg-sleep-500 text-white font-bold">
-                    2
-                  </div>
-                  <h3 className="text-2xl font-bold mb-3 text-slate-800">Processing & Analysis</h3>
-                  <p className="text-slate-600 mb-4">
-                    Our advanced algorithms process your sleep data to identify patterns and calculate sleep quality metrics.
-                  </p>
-                </div>
-                <div className="hidden md:block absolute top-0 left-0 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-sleep-500 text-white flex items-center justify-center font-bold">
-                  2
-                </div>
-              </div>
-              
-              {/* Step 3 */}
-              <div className="relative animate-fade-in delay-200">
-                <div className="md:text-right">
-                  <div className="md:hidden w-12 h-12 mb-4 flex items-center justify-center rounded-full bg-sleep-500 text-white font-bold">
-                    3
-                  </div>
-                  <h3 className="text-2xl font-bold mb-3 text-slate-800">Personalized Insights</h3>
-                  <p className="text-slate-600 mb-4">
-                    Receive detailed reports with personalized insights about your sleep quality and patterns.
-                  </p>
-                </div>
-                <div className="hidden md:block absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-sleep-500 text-white flex items-center justify-center font-bold">
-                  3
-                </div>
-              </div>
-              
-              {/* Empty space for alignment */}
-              <div className="hidden md:block"></div>
-              
-              {/* Empty space for alignment */}
-              <div className="hidden md:block"></div>
-              
-              {/* Step 4 */}
-              <div className="relative animate-fade-in delay-300">
-                <div>
-                  <div className="md:hidden w-12 h-12 mb-4 flex items-center justify-center rounded-full bg-sleep-500 text-white font-bold">
-                    4
-                  </div>
-                  <h3 className="text-2xl font-bold mb-3 text-slate-800">Recommendations</h3>
-                  <p className="text-slate-600 mb-4">
-                    Get actionable recommendations to improve your sleep quality based on your unique data.
-                  </p>
-                </div>
-                <div className="hidden md:block absolute top-0 left-0 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-sleep-500 text-white flex items-center justify-center font-bold">
-                  4
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      
-      {/* Features Highlight */}
-      <section className="py-20 bg-white">
-        <div className="container-custom">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="animate-fade-in">
-              <img 
-                src="/lovable-uploads/0d1ffa34-3c02-49c2-9042-0b82a49d2b2d.png" 
-                alt="Sleep analysis dashboard" 
-                className="rounded-xl shadow-lg transition-image"
-              />
-            </div>
-            
-            <div>
-              <SectionTitle 
-                pretitle="Key Features"
-                title="Advanced Analytics at Your Fingertips"
-                description="Our sleep analysis tools provide comprehensive insights to help you optimize your sleep quality."
-              />
-              
-              <div className="mt-8 space-y-6">
-                <div className="flex">
-                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-sleep-100 text-sleep-500 flex items-center justify-center mr-4">
-                    <Activity className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold mb-1 text-slate-800">Sleep Quality Score</h4>
-                    <p className="text-slate-600">
-                      Get a daily sleep quality score that helps you understand how well you slept.
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex">
-                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-sleep-100 text-sleep-500 flex items-center justify-center mr-4">
-                    <Moon className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold mb-1 text-slate-800">Sleep Stage Analysis</h4>
-                    <p className="text-slate-600">
-                      Track your time spent in each sleep stage: REM, deep sleep, and light sleep.
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex">
-                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-sleep-100 text-sleep-500 flex items-center justify-center mr-4">
-                    <Clock className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold mb-1 text-slate-800">Sleep Duration Tracking</h4>
-                    <p className="text-slate-600">
-                      Monitor your total sleep time and sleep efficiency to ensure you're getting enough rest.
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex">
-                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-sleep-100 text-sleep-500 flex items-center justify-center mr-4">
-                    <Zap className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold mb-1 text-slate-800">Smart Recommendations</h4>
-                    <p className="text-slate-600">
-                      Receive personalized suggestions to improve your sleep based on your unique patterns.
-                    </p>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
