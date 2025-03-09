@@ -11,7 +11,6 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false); // This would be connected to your auth system
-  const [currentDateTime, setCurrentDateTime] = useState(new Date());
   const location = useLocation();
   const navigate = useNavigate();
   const mobileMenuRef = useRef<HTMLDivElement>(null);
@@ -94,26 +93,6 @@ const Navbar = () => {
     { name: "Contact", path: "/contact" },
   ];
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentDateTime(new Date());
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  const formattedDateTime = () => {
-    const options: Intl.DateTimeFormatOptions = { 
-      weekday: 'short',
-      month: 'short', 
-      day: 'numeric',
-      hour: '2-digit', 
-      minute: '2-digit',
-      second: '2-digit'
-    };
-    return currentDateTime.toLocaleString(undefined, options);
-  };
-
   return (
     <header
       className={cn(
@@ -182,9 +161,6 @@ const Navbar = () => {
         </nav>
 
         <div className="hidden md:flex items-center space-x-4">
-          <div className="text-slate-700 text-sm font-medium bg-slate-50 px-3 py-1 rounded-md">
-            {formattedDateTime()}
-          </div>
           <Button 
             variant="ghost" 
             size="sm" 
@@ -351,9 +327,6 @@ const Navbar = () => {
               {isDarkMode ? <Sun className="w-4 h-4 mr-2" /> : <Moon className="w-4 h-4 mr-2" />}
               {isDarkMode ? "Light Mode" : "Dark Mode"}
             </Button>
-            <div className="text-sm bg-slate-50 p-2 rounded-md my-2">
-              {formattedDateTime()}
-            </div>
           </nav>
         </div>
       )}
