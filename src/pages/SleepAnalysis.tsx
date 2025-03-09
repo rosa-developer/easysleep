@@ -83,6 +83,9 @@ const SleepAnalysis = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  // Helper function to get color for each bar
+  const getBarColor = (entry: { color: string }) => entry.color;
+
   return (
     <div className={`transition-opacity duration-500 ${isLoading ? 'opacity-0' : 'opacity-100'}`}>
       {/* Hero Section */}
@@ -249,7 +252,17 @@ const SleepAnalysis = () => {
                             <Tooltip 
                               formatter={(value) => [`${value}%`, 'Percentage']}
                             />
-                            <Bar dataKey="value" fill={(entry) => entry.color} barSize={30} />
+                            <Bar 
+                              dataKey="value" 
+                              fill="#8884d8" 
+                              barSize={30} 
+                              // Here's the fix: Pass a string as fill instead of a function
+                              // Using a color mapping based on index
+                            >
+                              {sleepStagesData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={entry.color} />
+                              ))}
+                            </Bar>
                           </BarChart>
                         </ResponsiveContainer>
                       </div>
