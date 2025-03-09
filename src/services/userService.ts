@@ -12,8 +12,8 @@ export const createUser = async (userData: UserData) => {
   try {
     await connectToMongoDB();
     
-    // Check if user already exists with proper typing
-    const existingUser = await User.findOne({ email: userData.email }).lean();
+    // Check if user already exists
+    const existingUser = await User.findOne({ email: userData.email });
     if (existingUser) {
       throw new Error('User already exists with this email');
     }
@@ -37,8 +37,8 @@ export const authenticateUser = async (email: string, password: string) => {
   try {
     await connectToMongoDB();
     
-    // Find user by email with proper typing
-    const user = await User.findOne({ email }).lean();
+    // Find user by email
+    const user = await User.findOne({ email });
     
     // If user doesn't exist or password doesn't match
     if (!user || user.password !== password) {
@@ -46,7 +46,7 @@ export const authenticateUser = async (email: string, password: string) => {
     }
     
     // Return user without password
-    const authenticatedUser = { ...user };
+    const authenticatedUser = user.toObject();
     delete authenticatedUser.password;
     
     return authenticatedUser;
@@ -60,8 +60,8 @@ export const requestPasswordReset = async (email: string) => {
   try {
     await connectToMongoDB();
     
-    // Check if user exists with proper typing
-    const user = await User.findOne({ email }).lean();
+    // Check if user exists
+    const user = await User.findOne({ email });
     if (!user) {
       throw new Error('No user found with this email');
     }
