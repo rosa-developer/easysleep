@@ -1,20 +1,19 @@
 
-import { connectToSqlServer } from './sqlServer';
-import sql from 'mssql';
+import { connectToSqlServer, executeQuery } from './sqlServer';
 
 export const setupDatabase = async () => {
   try {
-    const pool = await connectToSqlServer();
+    await connectToSqlServer();
     
     // Check if Users table exists, if not create it
-    const tableExists = await pool.request().query(`
+    const tableExists = await executeQuery(`
       SELECT OBJECT_ID('dbo.Users') as TableID
     `);
     
     if (!tableExists.recordset[0].TableID) {
       console.log('Creating Users table...');
       
-      await pool.request().query(`
+      await executeQuery(`
         CREATE TABLE Users (
           id INT IDENTITY(1,1) PRIMARY KEY,
           name NVARCHAR(100) NOT NULL,
@@ -35,4 +34,3 @@ export const setupDatabase = async () => {
     throw error;
   }
 };
-

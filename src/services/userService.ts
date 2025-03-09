@@ -1,6 +1,5 @@
 
-import { connectToSqlServer } from '../utils/sqlServer';
-import sql from 'mssql';
+import { connectToSqlServer, createRequest, executeQuery } from '../utils/sqlServer';
 
 export interface UserData {
   name?: string;
@@ -18,11 +17,9 @@ export interface User {
 
 export const createUser = async (userData: UserData) => {
   try {
-    const pool = await connectToSqlServer();
-    
     // Check if user already exists
-    const userCheck = await pool.request()
-      .input('email', sql.VarChar, userData.email)
+    const userCheck = await createRequest()
+      .input('email', null, userData.email)
       .query('SELECT * FROM Users WHERE email = @email');
     
     if (userCheck.recordset.length > 0) {
@@ -30,22 +27,25 @@ export const createUser = async (userData: UserData) => {
     }
     
     // Create new user
-    const result = await pool.request()
-      .input('name', sql.VarChar, userData.name || '')
-      .input('email', sql.VarChar, userData.email)
-      .input('password', sql.VarChar, userData.password)
-      .input('createdAt', sql.DateTime, new Date())
-      .query(`
-        INSERT INTO Users (name, email, password, createdAt)
-        OUTPUT INSERTED.*
-        VALUES (@name, @email, @password, @createdAt)
-      `);
+    const result = await executeQuery(`
+      INSERT INTO Users (name, email, password, createdAt)
+      OUTPUT INSERTED.*
+      VALUES (@name, @email, @password, @createdAt)
+    `, {
+      name: userData.name || '',
+      email: userData.email,
+      password: userData.password,
+      createdAt: new Date()
+    });
     
     // Return user without password
     const newUser = result.recordset[0];
-    delete newUser.password;
+    if (newUser) {
+      const { password, ...userWithoutPassword } = newUser;
+      return userWithoutPassword;
+    }
     
-    return newUser;
+    throw new Error('Failed to create user');
   } catch (error) {
     console.error('Error creating user:', error);
     throw error;
@@ -54,11 +54,9 @@ export const createUser = async (userData: UserData) => {
 
 export const authenticateUser = async (email: string, password: string) => {
   try {
-    const pool = await connectToSqlServer();
-    
     // Find user by email
-    const result = await pool.request()
-      .input('email', sql.VarChar, email)
+    const result = await createRequest()
+      .input('email', null, email)
       .query('SELECT * FROM Users WHERE email = @email');
     
     const user = result.recordset[0];
@@ -69,8 +67,7 @@ export const authenticateUser = async (email: string, password: string) => {
     }
     
     // Return user without password
-    const authenticatedUser = { ...user };
-    delete authenticatedUser.password;
+    const { password: _, ...authenticatedUser } = user;
     
     return authenticatedUser;
   } catch (error) {
@@ -81,11 +78,9 @@ export const authenticateUser = async (email: string, password: string) => {
 
 export const requestPasswordReset = async (email: string) => {
   try {
-    const pool = await connectToSqlServer();
-    
     // Check if user exists
-    const result = await pool.request()
-      .input('email', sql.VarChar, email)
+    const result = await createRequest()
+      .input('email', null, email)
       .query('SELECT * FROM Users WHERE email = @email');
     
     if (result.recordset.length === 0) {
@@ -104,4 +99,3 @@ export const requestPasswordReset = async (email: string) => {
     throw error;
   }
 };
-

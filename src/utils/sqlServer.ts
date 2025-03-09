@@ -1,51 +1,85 @@
 
-import sql from 'mssql';
+// This is a browser-friendly mock implementation of SQL Server connection
+// In a real app, this would be a backend API service
 
-let pool: sql.ConnectionPool | null = null;
-
-// SQL Server connection configuration
-const config: sql.config = {
-  user: process.env.SQL_USER || 'sa',
-  password: process.env.SQL_PASSWORD || 'YourStrong@Passw0rd',
-  server: process.env.SQL_SERVER || 'localhost',
-  database: process.env.SQL_DATABASE || 'easysleep',
-  options: {
-    encrypt: true, // Use this if you're on Windows Azure
-    trustServerCertificate: true, // Change to true for local dev / self-signed certs
-  },
-  pool: {
-    max: 10,
-    min: 0,
-    idleTimeoutMillis: 30000
-  }
-};
+let isConnected = false;
+const mockUsers: any[] = [];
 
 export const connectToSqlServer = async () => {
   try {
-    if (pool) {
-      console.log('Already connected to SQL Server');
-      return pool;
-    }
-
-    pool = await new sql.ConnectionPool(config).connect();
-    console.log('Connected to SQL Server');
-    return pool;
+    console.log('Simulating connection to SQL Server...');
+    // Simulate connection delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    isConnected = true;
+    console.log('Connected to simulated SQL Server');
+    return { isConnected: true };
   } catch (error) {
-    console.error('Error connecting to SQL Server:', error);
+    console.error('Error connecting to simulated SQL Server:', error);
     throw error;
   }
 };
 
 export const closeSqlServerConnection = async () => {
   try {
-    if (pool) {
-      await pool.close();
-      pool = null;
-      console.log('SQL Server connection closed');
+    if (isConnected) {
+      // Simulate disconnection delay
+      await new Promise(resolve => setTimeout(resolve, 300));
+      isConnected = false;
+      console.log('Simulated SQL Server connection closed');
     }
   } catch (error) {
-    console.error('Error closing SQL Server connection:', error);
+    console.error('Error closing simulated SQL Server connection:', error);
     throw error;
   }
 };
 
+// Mock SQL functionality for browser use
+export const executeQuery = async (query: string, params?: any) => {
+  console.log('Executing simulated query:', query, params);
+  
+  // Simulate query execution delay
+  await new Promise(resolve => setTimeout(resolve, 300));
+  
+  if (query.includes('SELECT OBJECT_ID')) {
+    return { recordset: [{ TableID: null }] };
+  }
+  
+  if (query.includes('CREATE TABLE')) {
+    console.log('Simulated table creation');
+    return { rowsAffected: [1] };
+  }
+  
+  if (query.includes('INSERT INTO Users')) {
+    const newUser = {
+      id: mockUsers.length + 1,
+      name: params?.name || '',
+      email: params?.email || '',
+      password: params?.password || '',
+      createdAt: params?.createdAt || new Date()
+    };
+    mockUsers.push(newUser);
+    return { recordset: [newUser] };
+  }
+  
+  if (query.includes('SELECT * FROM Users WHERE email')) {
+    const user = mockUsers.find(u => u.email === params?.email);
+    return { recordset: user ? [user] : [] };
+  }
+  
+  return { recordset: [] };
+};
+
+// Mock request builder for browser
+export const createRequest = () => {
+  const inputs: Record<string, any> = {};
+  
+  return {
+    input: (name: string, type: any, value: any) => {
+      inputs[name] = value;
+      return createRequest();
+    },
+    query: async (query: string) => {
+      return executeQuery(query, inputs);
+    }
+  };
+};
