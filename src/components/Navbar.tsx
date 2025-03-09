@@ -82,6 +82,14 @@ const Navbar = () => {
     { name: "Home", path: "/" },
     { name: "Sleep Analysis", path: "/analysis" },
     { name: "Sleep Tracker", path: "/tracker" },
+    { name: "Features", path: "#", 
+      dropdown: [
+        { name: "Sleep Technology", path: "/technology" },
+        { name: "Smart Alarm", path: "/smart-alarm" },
+        { name: "Sleep Coaching", path: "/coaching" },
+        { name: "Health Integration", path: "/health-integration" },
+      ] 
+    },
     { name: "About", path: "/about" },
     { name: "Contact", path: "/contact" },
   ];
@@ -130,16 +138,46 @@ const Navbar = () => {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
           {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              to={link.path}
-              className={cn(
-                "text-slate-700 hover:text-sleep-500 transition-colors duration-200 text-sm font-medium relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-sleep-500 after:origin-center after:scale-x-0 after:transition-transform hover:after:scale-x-100",
-                location.pathname === link.path && "text-sleep-500 after:scale-x-100"
+            <div key={link.name} className="relative group">
+              {link.dropdown ? (
+                <>
+                  <button
+                    className={cn(
+                      "text-slate-700 hover:text-sleep-500 transition-colors duration-200 text-sm font-medium relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-sleep-500 after:origin-center after:scale-x-0 after:transition-transform hover:after:scale-x-100 flex items-center",
+                      location.pathname === link.path && "text-sleep-500 after:scale-x-100"
+                    )}
+                  >
+                    {link.name}
+                    <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </button>
+                  <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    <div className="py-1 rounded-md bg-white shadow-xs">
+                      {link.dropdown.map((dropdownItem) => (
+                        <Link
+                          key={dropdownItem.name}
+                          to={dropdownItem.path}
+                          className="block px-4 py-2 text-sm text-slate-700 hover:bg-sleep-50 hover:text-sleep-500"
+                        >
+                          {dropdownItem.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <Link
+                  to={link.path}
+                  className={cn(
+                    "text-slate-700 hover:text-sleep-500 transition-colors duration-200 text-sm font-medium relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-sleep-500 after:origin-center after:scale-x-0 after:transition-transform hover:after:scale-x-100",
+                    location.pathname === link.path && "text-sleep-500 after:scale-x-100"
+                  )}
+                >
+                  {link.name}
+                </Link>
               )}
-            >
-              {link.name}
-            </Link>
+            </div>
           ))}
         </nav>
 
@@ -221,17 +259,37 @@ const Navbar = () => {
         >
           <nav className="flex flex-col space-y-4 pt-4">
             {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                to={link.path}
-                className={cn(
-                  "text-slate-700 py-2 px-4 rounded-md hover:bg-slate-100 hover:text-sleep-500 transition-colors",
-                  location.pathname === link.path && "bg-slate-100 text-sleep-500"
+              <>
+                {link.dropdown ? (
+                  <div key={link.name} className="py-2 px-4">
+                    <div className="font-medium text-slate-800 mb-2">{link.name}</div>
+                    <div className="pl-4 space-y-2 border-l border-slate-100">
+                      {link.dropdown.map((dropdownItem) => (
+                        <Link
+                          key={dropdownItem.name}
+                          to={dropdownItem.path}
+                          className="block py-1 text-slate-700 hover:text-sleep-500"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                          {dropdownItem.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <Link
+                    key={link.name}
+                    to={link.path}
+                    className={cn(
+                      "text-slate-700 py-2 px-4 rounded-md hover:bg-slate-100 hover:text-sleep-500 transition-colors",
+                      location.pathname === link.path && "bg-slate-100 text-sleep-500"
+                    )}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    {link.name}
+                  </Link>
                 )}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {link.name}
-              </Link>
+              </>
             ))}
             <div className="border-t border-gray-200 my-2 pt-2"></div>
             {isLoggedIn ? (

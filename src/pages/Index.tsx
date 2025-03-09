@@ -88,42 +88,54 @@ const Index = () => {
           />
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
-            <FeatureCard 
-              icon={Activity}
-              title="In-Depth Sleep Analysis"
-              description="Get detailed insights into your sleep cycles, patterns, and quality with our advanced sleep monitoring technology."
-              className="animate-fade-in"
-            />
-            <FeatureCard 
-              icon={Moon}
-              title="Personalized Sleep Plans"
-              description="Receive customized sleep recommendations based on your unique sleep data and personal goals."
-              className="animate-fade-in delay-100"
-            />
-            <FeatureCard 
-              icon={Zap}
-              title="Smart Alarm Technology"
-              description="Wake up feeling refreshed with our smart alarm that detects the optimal moment in your sleep cycle."
-              className="animate-fade-in delay-200"
-            />
-            <FeatureCard 
-              icon={BadgeCheck}
-              title="Expert Sleep Coaching"
-              description="Connect with certified sleep specialists who can provide personalized guidance and support."
-              className="animate-fade-in delay-300"
-            />
-            <FeatureCard 
-              icon={Clock}
-              title="Dedicated Sleep Tracker"
-              description="Monitor your sleep progress over time with detailed statistics and visual reports."
-              className="animate-fade-in delay-400"
-            />
-            <FeatureCard 
-              icon={Heart}
-              title="Health Integration"
-              description="Seamlessly connect your sleep data with other health metrics for a comprehensive wellness approach."
-              className="animate-fade-in delay-500"
-            />
+            <Link to="/technology" className="block">
+              <FeatureCard 
+                icon={Activity}
+                title="In-Depth Sleep Analysis"
+                description="Get detailed insights into your sleep cycles, patterns, and quality with our advanced sleep monitoring technology."
+                className="animate-fade-in h-full"
+              />
+            </Link>
+            <Link to="/technology" className="block">
+              <FeatureCard 
+                icon={Moon}
+                title="Personalized Sleep Plans"
+                description="Receive customized sleep recommendations based on your unique sleep data and personal goals."
+                className="animate-fade-in delay-100 h-full"
+              />
+            </Link>
+            <Link to="/smart-alarm" className="block">
+              <FeatureCard 
+                icon={Zap}
+                title="Smart Alarm Technology"
+                description="Wake up feeling refreshed with our smart alarm that detects the optimal moment in your sleep cycle."
+                className="animate-fade-in delay-200 h-full"
+              />
+            </Link>
+            <Link to="/coaching" className="block">
+              <FeatureCard 
+                icon={BadgeCheck}
+                title="Expert Sleep Coaching"
+                description="Connect with certified sleep specialists who can provide personalized guidance and support."
+                className="animate-fade-in delay-300 h-full"
+              />
+            </Link>
+            <Link to="/tracker" className="block">
+              <FeatureCard 
+                icon={Clock}
+                title="Dedicated Sleep Tracker"
+                description="Monitor your sleep progress over time with detailed statistics and visual reports."
+                className="animate-fade-in delay-400 h-full"
+              />
+            </Link>
+            <Link to="/health-integration" className="block">
+              <FeatureCard 
+                icon={Heart}
+                title="Health Integration"
+                description="Seamlessly connect your sleep data with other health metrics for a comprehensive wellness approach."
+                className="animate-fade-in delay-500 h-full"
+              />
+            </Link>
           </div>
         </div>
       </section>

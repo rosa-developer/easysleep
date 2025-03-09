@@ -8,6 +8,10 @@ import Layout from "./components/Layout";
 import Index from "./pages/Index";
 import SleepAnalysis from "./pages/SleepAnalysis";
 import SleepTracker from "./pages/SleepTracker";
+import SleepTechnology from "./pages/SleepTechnology";
+import SmartAlarm from "./pages/SmartAlarm";
+import SleepCoaching from "./pages/SleepCoaching";
+import HealthIntegration from "./pages/HealthIntegration";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Login from "./pages/Login";
@@ -38,6 +42,10 @@ const App = () => {
               <Route path="/" element={<Index />} />
               <Route path="/analysis" element={<SleepAnalysis />} />
               <Route path="/tracker" element={<SleepTracker />} />
+              <Route path="/technology" element={<SleepTechnology />} />
+              <Route path="/smart-alarm" element={<SmartAlarm />} />
+              <Route path="/coaching" element={<SleepCoaching />} />
+              <Route path="/health-integration" element={<HealthIntegration />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/login" element={<Login />} />
@@ -53,4 +61,3 @@ const App = () => {
 };
 
 export default App;
-
