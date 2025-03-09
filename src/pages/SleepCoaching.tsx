@@ -1,10 +1,12 @@
 
-import { Users, BookOpen, Award, MessageCircle, Calendar, FileText } from "lucide-react";
+import { Users, BookOpen, Award, MessageCircle, Calendar, FileText, Moon, Star, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SectionTitle from "@/components/SectionTitle";
 import FeatureCard from "@/components/FeatureCard";
 import TestimonialCard from "@/components/TestimonialCard";
 import { Link } from "react-router-dom";
+import CoachingPricing from "@/components/coaching/CoachingPricing";
+import BookingForm from "@/components/coaching/BookingForm";
 
 const SleepCoaching = () => {
   return (
@@ -100,6 +102,69 @@ const SleepCoaching = () => {
               title="Progress Reports"
               description="Detailed analysis of your sleep improvement journey with actionable insights and recommendations."
             />
+          </div>
+        </div>
+      </section>
+      
+      {/* Pricing Section */}
+      <section className="py-20 bg-slate-50">
+        <div className="container-custom">
+          <SectionTitle 
+            pretitle="Pricing Options"
+            title="Coaching Plans"
+            description="Choose the right coaching plan that fits your needs and budget."
+            centered={true}
+          />
+          
+          <CoachingPricing />
+        </div>
+      </section>
+      
+      {/* Booking Form Section */}
+      <section className="py-20 bg-white">
+        <div className="container-custom">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <SectionTitle 
+                pretitle="Get Started"
+                title="Book Your Consultation"
+                description="Schedule a free 15-minute consultation with one of our sleep experts to discuss your needs and find the right coaching program for you."
+              />
+              
+              <div className="mt-8 space-y-6">
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-sleep-100 text-sleep-600 flex items-center justify-center mr-4">
+                    <Moon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-semibold mb-1">Expert Sleep Coaches</h4>
+                    <p className="text-slate-600">Our coaches are certified sleep specialists with years of experience helping people improve their sleep quality.</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-sleep-100 text-sleep-600 flex items-center justify-center mr-4">
+                    <Star className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-semibold mb-1">Personalized Approach</h4>
+                    <p className="text-slate-600">Every coaching program is tailored to your specific sleep issues, lifestyle, and goals.</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-sleep-100 text-sleep-600 flex items-center justify-center mr-4">
+                    <Shield className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-semibold mb-1">Satisfaction Guarantee</h4>
+                    <p className="text-slate-600">If you're not satisfied with your coaching experience, we offer a 30-day money-back guarantee.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <BookingForm />
           </div>
         </div>
       </section>
