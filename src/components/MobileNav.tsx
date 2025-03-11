@@ -1,0 +1,173 @@
+
+import { useState, useEffect, useRef } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { LogIn, UserPlus, User, LogOut, Moon, Sun } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+
+interface MobileNavProps {
+  isOpen: boolean;
+  onClose: () => void;
+  navLinks: Array<{
+    name: string;
+    path: string;
+    dropdown?: Array<{ name: string; path: string }>;
+  }>;
+  isLoggedIn: boolean;
+  isDarkMode: boolean;
+  toggleDarkMode: () => void;
+  handleLogout: () => void;
+  navigateToPath: (path: string) => void;
+}
+
+const MobileNav = ({
+  isOpen,
+  onClose,
+  navLinks,
+  isLoggedIn,
+  isDarkMode,
+  toggleDarkMode,
+  handleLogout,
+  navigateToPath
+}: MobileNavProps) => {
+  const location = useLocation();
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen, onClose]);
+
+  // Prevent scrolling when mobile menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div
+      ref={mobileMenuRef}
+      className="md:hidden fixed inset-0 top-16 bg-white dark:bg-gray-900 z-40 p-4 shadow-lg overflow-y-auto transition-all duration-300 ease-in-out"
+    >
+      <nav className="flex flex-col space-y-4 pt-4">
+        {navLinks.map((link) => (
+          <>
+            {link.dropdown ? (
+              <div key={link.name} className="py-2 px-4">
+                <div className="font-medium text-slate-800 dark:text-slate-200 mb-2">{link.name}</div>
+                <div className="pl-4 space-y-2 border-l border-slate-100 dark:border-gray-800">
+                  {link.dropdown.map((dropdownItem) => (
+                    <Link
+                      key={dropdownItem.name}
+                      to={dropdownItem.path}
+                      className="block py-1 text-slate-700 dark:text-slate-300 hover:text-sleep-500 dark:hover:text-sleep-400"
+                      onClick={onClose}
+                    >
+                      {dropdownItem.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <Link
+                key={link.name}
+                to={link.path}
+                className={cn(
+                  "text-slate-700 dark:text-slate-300 py-2 px-4 rounded-md hover:bg-slate-100 dark:hover:bg-gray-800 hover:text-sleep-500 dark:hover:text-sleep-400 transition-colors",
+                  location.pathname === link.path && "bg-slate-100 dark:bg-gray-800 text-sleep-500 dark:text-sleep-400"
+                )}
+                onClick={onClose}
+              >
+                {link.name}
+              </Link>
+            )}
+          </>
+        ))}
+        <div className="border-t border-gray-200 dark:border-gray-800 my-2 pt-2"></div>
+        {isLoggedIn ? (
+          <>
+            <Button
+              variant="ghost"
+              className="justify-start"
+              onClick={() => {
+                navigateToPath("/profile");
+                onClose();
+              }}
+            >
+              <User className="w-4 h-4 mr-2" />
+              Profile
+            </Button>
+            <Button
+              variant="ghost"
+              className="justify-start"
+              onClick={() => {
+                handleLogout();
+                onClose();
+              }}
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Log out
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button
+              variant="ghost"
+              className="justify-start"
+              onClick={() => {
+                navigateToPath("/login");
+                onClose();
+              }}
+            >
+              <LogIn className="w-4 h-4 mr-2" />
+              Log in
+            </Button>
+            <Button
+              variant="ghost"
+              className="justify-start"
+              onClick={() => {
+                navigateToPath("/signup");
+                onClose();
+              }}
+            >
+              <UserPlus className="w-4 h-4 mr-2" />
+              Sign up
+            </Button>
+          </>
+        )}
+        <Button 
+          variant="ghost" 
+          className="justify-start" 
+          onClick={toggleDarkMode}
+        >
+          {isDarkMode ? <Sun className="w-4 h-4 mr-2" /> : <Moon className="w-4 h-4 mr-2" />}
+          {isDarkMode ? "Light Mode" : "Dark Mode"}
+        </Button>
+      </nav>
+    </div>
+  );
+};
+
+export default MobileNav;
