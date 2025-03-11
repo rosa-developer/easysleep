@@ -7,65 +7,22 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import MobileNav from "./MobileNav";
 import DesktopNav from "./DesktopNav";
+import { useThemeToggle } from "@/hooks/useThemeToggle";
+import { useScrollDetection } from "@/hooks/useScrollDetection";
 
 const Navbar = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    // Check if user has previously set a preference
-    const savedTheme = localStorage.getItem("theme");
-    // Check system preference
-    const systemPreference = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    
-    return savedTheme === "dark" || (!savedTheme && systemPreference);
-  });
   const [isLoggedIn, setIsLoggedIn] = useState(false); // This would be connected to your auth system
   const location = useLocation();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    // Set initial dark mode class on document
-    if (isDarkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+  
+  const { isDarkMode, toggleDarkMode } = useThemeToggle();
+  const isScrolled = useScrollDetection(10);
 
   // Close mobile menu when route changes
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [location]);
-
-  const toggleDarkMode = () => {
-    const newDarkMode = !isDarkMode;
-    setIsDarkMode(newDarkMode);
-    
-    // Update DOM
-    if (newDarkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-    
-    // Save preference
-    localStorage.setItem("theme", newDarkMode ? "dark" : "light");
-  };
 
   const handleLogout = () => {
     // This would be connected to your auth system
