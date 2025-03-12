@@ -33,9 +33,8 @@ export const NavigationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Navigation links configuration
+  // Navigation links configuration - "Home" moved to the right side
   const navLinks: NavLink[] = [
-    { name: "Home", path: "/" },
     { name: "Sleep Analysis", path: "/analysis" },
     { name: "Sleep Tracker", path: "/tracker" },
     { name: "Features", path: "#", 
@@ -48,6 +47,7 @@ export const NavigationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     },
     { name: "About", path: "/about" },
     { name: "Contact", path: "/contact" },
+    { name: "Home", path: "/" },
   ];
 
   // Close mobile menu when route changes
