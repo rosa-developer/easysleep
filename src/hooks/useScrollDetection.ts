@@ -5,19 +5,25 @@ export const useScrollDetection = (threshold = 0) => {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
+    // Check initial scroll position
+    if (window.scrollY > threshold) {
+      setIsScrolled(true);
+    }
+    
     const handleScroll = () => {
-      if (window.scrollY > threshold) {
+      // Add some hysteresis to prevent flickering
+      if (!isScrolled && window.scrollY > threshold + 5) {
         setIsScrolled(true);
-      } else {
+      } else if (isScrolled && window.scrollY < threshold - 5) {
         setIsScrolled(false);
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [threshold]);
+  }, [threshold, isScrolled]);
 
   return isScrolled;
 };

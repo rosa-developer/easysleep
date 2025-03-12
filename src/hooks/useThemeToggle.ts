@@ -15,24 +15,43 @@ export const useThemeToggle = () => {
     // Set initial dark mode class on document
     if (isDarkMode) {
       document.documentElement.classList.add("dark");
+      document.documentElement.style.colorScheme = "dark";
     } else {
       document.documentElement.classList.remove("dark");
+      document.documentElement.style.colorScheme = "light";
     }
+    
+    // Listen for system preference changes
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleChange = (e: MediaQueryListEvent) => {
+      const hasUserPreference = localStorage.getItem("theme") !== null;
+      if (!hasUserPreference) {
+        setIsDarkMode(e.matches);
+        updateTheme(e.matches);
+      }
+    };
+    
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
+  
+  const updateTheme = (darkMode: boolean) => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+      document.documentElement.style.colorScheme = "dark";
+    } else {
+      document.documentElement.classList.remove("dark");
+      document.documentElement.style.colorScheme = "light";
+    }
+    
+    // Save preference
+    localStorage.setItem("theme", darkMode ? "dark" : "light");
+  };
   
   const toggleDarkMode = () => {
     const newDarkMode = !isDarkMode;
     setIsDarkMode(newDarkMode);
-    
-    // Update DOM
-    if (newDarkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-    
-    // Save preference
-    localStorage.setItem("theme", newDarkMode ? "dark" : "light");
+    updateTheme(newDarkMode);
   };
 
   return { isDarkMode, toggleDarkMode };

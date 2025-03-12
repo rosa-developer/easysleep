@@ -1,28 +1,27 @@
 
-import { useState, useEffect, useRef } from "react";
+import { useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { LogIn, UserPlus, User, LogOut, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { type NavigationProps, type NavLink } from "@/types/navigation";
+import { useNavigation } from "@/contexts/NavigationContext";
 
-interface MobileNavProps extends NavigationProps {
+interface MobileNavProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const MobileNav = ({
-  isOpen,
-  onClose,
-  navLinks,
-  isLoggedIn,
-  isDarkMode,
-  toggleDarkMode,
-  handleLogout,
-  navigateToPath
-}: MobileNavProps) => {
+const MobileNav = ({ isOpen, onClose }: MobileNavProps) => {
   const location = useLocation();
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const { 
+    navLinks,
+    isLoggedIn,
+    isDarkMode,
+    toggleDarkMode,
+    handleLogout,
+    navigateToPath
+  } = useNavigation();
 
   // Close mobile menu when clicking outside
   useEffect(() => {
@@ -59,7 +58,7 @@ const MobileNav = ({
   return (
     <div
       ref={mobileMenuRef}
-      className="md:hidden fixed inset-0 top-16 bg-white dark:bg-gray-900 z-40 p-4 shadow-lg overflow-y-auto transition-all duration-300 ease-in-out"
+      className="md:hidden fixed inset-0 top-16 bg-white dark:bg-gray-900 z-40 p-4 shadow-lg overflow-y-auto transition-all duration-300 ease-in-out animate-fade-in"
     >
       <nav className="flex flex-col space-y-4 pt-4">
         {navLinks.map((link) => (
@@ -84,7 +83,7 @@ const MobileNav = ({
               <Link
                 to={link.path}
                 className={cn(
-                  "text-slate-700 dark:text-slate-300 py-2 px-4 rounded-md hover:bg-slate-100 dark:hover:bg-gray-800 hover:text-sleep-500 dark:hover:text-sleep-400 transition-colors",
+                  "text-slate-700 dark:text-slate-300 py-2 px-4 rounded-md hover:bg-slate-100 dark:hover:bg-gray-800 hover:text-sleep-500 dark:hover:text-sleep-400 transition-colors block",
                   location.pathname === link.path && "bg-slate-100 dark:bg-gray-800 text-sleep-500 dark:text-sleep-400"
                 )}
                 onClick={onClose}
@@ -131,7 +130,7 @@ const MobileAuthSection = ({
         <>
           <Button
             variant="ghost"
-            className="justify-start"
+            className="justify-start w-full"
             onClick={() => {
               navigateToPath("/profile");
               onClose();
@@ -142,7 +141,7 @@ const MobileAuthSection = ({
           </Button>
           <Button
             variant="ghost"
-            className="justify-start"
+            className="justify-start w-full text-red-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
             onClick={() => {
               handleLogout();
               onClose();
@@ -156,7 +155,7 @@ const MobileAuthSection = ({
         <>
           <Button
             variant="ghost"
-            className="justify-start"
+            className="justify-start w-full"
             onClick={() => {
               navigateToPath("/login");
               onClose();
@@ -166,8 +165,8 @@ const MobileAuthSection = ({
             Log in
           </Button>
           <Button
-            variant="ghost"
-            className="justify-start"
+            variant="default"
+            className="justify-start w-full bg-sleep-500 hover:bg-sleep-600"
             onClick={() => {
               navigateToPath("/signup");
               onClose();
@@ -180,7 +179,7 @@ const MobileAuthSection = ({
       )}
       <Button 
         variant="ghost" 
-        className="justify-start" 
+        className="justify-start w-full" 
         onClick={toggleDarkMode}
       >
         {isDarkMode ? <Sun className="w-4 h-4 mr-2" /> : <Moon className="w-4 h-4 mr-2" />}

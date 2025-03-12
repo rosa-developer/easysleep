@@ -3,17 +3,18 @@ import { Link, useLocation } from "react-router-dom";
 import { Moon, Sun, LogIn, UserPlus, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { type NavigationProps } from "@/types/navigation";
+import { useNavigation } from "@/contexts/NavigationContext";
 
-const DesktopNav = ({
-  navLinks,
-  isLoggedIn,
-  isDarkMode,
-  toggleDarkMode,
-  handleLogout,
-  navigateToPath
-}: NavigationProps) => {
+const DesktopNav = () => {
   const location = useLocation();
+  const {
+    navLinks,
+    isLoggedIn,
+    isDarkMode,
+    toggleDarkMode,
+    handleLogout,
+    navigateToPath
+  } = useNavigation();
 
   return (
     <div className="hidden md:flex items-center justify-between w-full">
@@ -30,7 +31,7 @@ const DesktopNav = ({
 };
 
 interface NavLinksProps {
-  navLinks: NavigationProps["navLinks"];
+  navLinks: ReturnType<typeof useNavigation>["navLinks"];
   location: ReturnType<typeof useLocation>;
 }
 
@@ -59,7 +60,7 @@ const NavLinks = ({ navLinks, location }: NavLinksProps) => {
 };
 
 interface DropdownLinkProps {
-  link: NavigationProps["navLinks"][0];
+  link: ReturnType<typeof useNavigation>["navLinks"][0];
   location: ReturnType<typeof useLocation>;
 }
 
@@ -133,6 +134,7 @@ const ThemeToggle = ({ isDarkMode, toggleDarkMode }: ThemeToggleProps) => {
       size="sm" 
       onClick={toggleDarkMode}
       aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+      className="transition-transform hover:scale-110"
     >
       {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
     </Button>
@@ -153,7 +155,7 @@ const AuthButtons = ({ isLoggedIn, handleLogout, navigateToPath }: AuthButtonsPr
           <Button
             variant="ghost"
             size="sm"
-            className="flex items-center gap-1"
+            className="flex items-center gap-1 transition-all hover:bg-sleep-50 dark:hover:bg-gray-800"
             onClick={() => navigateToPath("/profile")}
           >
             <User className="w-4 h-4 mr-1" />
@@ -162,7 +164,7 @@ const AuthButtons = ({ isLoggedIn, handleLogout, navigateToPath }: AuthButtonsPr
           <Button
             variant="outline"
             size="sm"
-            className="flex items-center gap-1"
+            className="flex items-center gap-1 transition-all hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
             onClick={handleLogout}
           >
             <LogOut className="w-4 h-4 mr-1" />
@@ -174,7 +176,7 @@ const AuthButtons = ({ isLoggedIn, handleLogout, navigateToPath }: AuthButtonsPr
           <Button
             variant="ghost"
             size="sm"
-            className="flex items-center gap-1"
+            className="flex items-center gap-1 transition-all hover:bg-sleep-50 dark:hover:bg-gray-800"
             onClick={() => navigateToPath("/login")}
           >
             <LogIn className="w-4 h-4 mr-1" />
@@ -183,7 +185,7 @@ const AuthButtons = ({ isLoggedIn, handleLogout, navigateToPath }: AuthButtonsPr
           <Button
             variant="outline"
             size="sm"
-            className="flex items-center gap-1"
+            className="flex items-center gap-1 bg-sleep-500 text-white hover:bg-sleep-600 border-none transition-all"
             onClick={() => navigateToPath("/signup")}
           >
             <UserPlus className="w-4 h-4 mr-1" />

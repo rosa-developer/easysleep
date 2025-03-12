@@ -1,55 +1,23 @@
 
 import { useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useNavigation } from "@/contexts/NavigationContext";
 import MobileNav from "./MobileNav";
 import DesktopNav from "./DesktopNav";
-import { useThemeToggle } from "@/hooks/useThemeToggle";
 import { useScrollDetection } from "@/hooks/useScrollDetection";
 
 const Navbar = () => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // This would be connected to your auth system
-  const location = useLocation();
-  const navigate = useNavigate();
+  const { 
+    isMobileMenuOpen, 
+    toggleMobileMenu, 
+    closeMobileMenu 
+  } = useNavigation();
   
-  const { isDarkMode, toggleDarkMode } = useThemeToggle();
   const isScrolled = useScrollDetection(10);
-
-  // Close mobile menu when route changes
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [location]);
-
-  const handleLogout = () => {
-    // This would be connected to your auth system
-    setIsLoggedIn(false);
-    toast.success("You have been logged out");
-    navigate("/");
-  };
-
-  const navigateToPath = (path: string) => {
-    navigate(path);
-  };
-
-  const navLinks = [
-    { name: "Home", path: "/" },
-    { name: "Sleep Analysis", path: "/analysis" },
-    { name: "Sleep Tracker", path: "/tracker" },
-    { name: "Features", path: "#", 
-      dropdown: [
-        { name: "Sleep Technology", path: "/technology" },
-        { name: "Smart Alarm", path: "/smart-alarm" },
-        { name: "Sleep Coaching", path: "/coaching" },
-        { name: "Health Integration", path: "/health-integration" },
-      ] 
-    },
-    { name: "About", path: "/about" },
-    { name: "Contact", path: "/contact" },
-  ];
 
   return (
     <header
@@ -73,21 +41,14 @@ const Navbar = () => {
         </Link>
 
         {/* Desktop Navigation */}
-        <DesktopNav 
-          navLinks={navLinks}
-          isLoggedIn={isLoggedIn}
-          isDarkMode={isDarkMode}
-          toggleDarkMode={toggleDarkMode}
-          handleLogout={handleLogout}
-          navigateToPath={navigateToPath}
-        />
+        <DesktopNav />
 
         {/* Mobile Menu Button */}
         <Button
           variant="ghost"
           size="sm"
           className="md:hidden"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          onClick={toggleMobileMenu}
           aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
         >
           {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -95,16 +56,7 @@ const Navbar = () => {
       </div>
 
       {/* Mobile Menu */}
-      <MobileNav 
-        isOpen={isMobileMenuOpen}
-        onClose={() => setIsMobileMenuOpen(false)}
-        navLinks={navLinks}
-        isLoggedIn={isLoggedIn}
-        isDarkMode={isDarkMode}
-        toggleDarkMode={toggleDarkMode}
-        handleLogout={handleLogout}
-        navigateToPath={navigateToPath}
-      />
+      <MobileNav isOpen={isMobileMenuOpen} onClose={closeMobileMenu} />
     </header>
   );
 };
