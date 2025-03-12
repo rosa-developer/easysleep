@@ -2,7 +2,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import SectionTitle from "@/components/SectionTitle";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { Mail, MapPin, Phone, Home } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -36,6 +37,19 @@ const Contact = () => {
 
   return (
     <div className="container-custom py-20">
+      <div className="mb-6">
+        <Button 
+          asChild 
+          variant="outline" 
+          className="flex items-center gap-2 text-sleep-500 hover:text-sleep-600 hover:bg-sleep-50"
+        >
+          <Link to="/">
+            <Home size={18} />
+            <span>Back to Home</span>
+          </Link>
+        </Button>
+      </div>
+
       <SectionTitle
         pretitle="Get In Touch"
         title="Contact Us"
