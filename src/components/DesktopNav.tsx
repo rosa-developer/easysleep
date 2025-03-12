@@ -17,7 +17,7 @@ const DesktopNav = () => {
   } = useNavigation();
 
   return (
-    <div className="hidden md:flex items-center justify-between w-full">
+    <div className="hidden md:flex items-center justify-between w-full pl-8">
       <NavLinks navLinks={navLinks} location={location} />
       <NavControls 
         isLoggedIn={isLoggedIn} 

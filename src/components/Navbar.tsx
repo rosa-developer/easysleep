@@ -45,7 +45,7 @@ const Navbar = () => {
           </span>
         </Link>
 
-        {/* Desktop Navigation */}
+        {/* Desktop Navigation with added spacing from the logo */}
         <DesktopNav />
 
         {/* Mobile Menu Button */}
