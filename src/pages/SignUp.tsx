@@ -48,7 +48,7 @@ const SignUp = () => {
   };
 
   return (
-    <div className="container-custom py-16 flex justify-center items-center">
+    <div className="container-custom py-8 md:py-16 px-4 w-full max-w-full flex justify-center items-center">
       <div className="w-full max-w-md">
         <SectionTitle
           title="Create Your Account"
@@ -56,12 +56,12 @@ const SignUp = () => {
           centered={true}
         />
         
-        <Card className="mt-8">
-          <CardHeader>
+        <Card className="mt-6 md:mt-8 w-full">
+          <CardHeader className="px-4 md:px-6">
             <CardTitle className="text-center">Sign Up</CardTitle>
             <CardDescription className="text-center">Enter your information to create an account</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4 md:px-6">
             <form onSubmit={handleSignUp} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
@@ -141,7 +141,7 @@ const SignUp = () => {
               </Button>
             </form>
           </CardContent>
-          <CardFooter className="flex flex-col space-y-2">
+          <CardFooter className="flex flex-col space-y-2 px-4 md:px-6">
             <div className="text-center text-sm">
               Already have an account?{" "}
               <Link to="/login" className="text-blue-500 hover:underline">
