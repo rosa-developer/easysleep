@@ -37,7 +37,18 @@ const Contact = () => {
 
   return (
     <div className="container-custom py-20">
-      <div className="mb-6">
+      <div className="flex justify-between items-center mb-10">
+        <Link 
+          to="/" 
+          className="flex items-center space-x-2 group"
+          aria-label="EasySleep Home"
+        >
+          <span className="text-sleep-800 dark:text-sleep-200 font-['Playfair_Display'] text-2xl font-bold tracking-tighter group-hover:text-sleep-600 dark:group-hover:text-sleep-300 transition-colors">
+            easy
+            <span className="text-sleep-500 group-hover:text-sleep-400 transition-colors">sleep</span>
+          </span>
+        </Link>
+        
         <Button 
           asChild 
           variant="outline" 
