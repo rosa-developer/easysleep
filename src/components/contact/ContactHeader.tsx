@@ -20,11 +20,11 @@ const ContactHeader = () => {
       <Button 
         asChild 
         variant="outline" 
-        className="flex items-center gap-2 text-sleep-500 hover:text-sleep-600 hover:bg-sleep-50"
+        className="flex items-center gap-2 text-sleep-500 hover:text-sleep-600 hover:bg-sleep-50 border-sleep-200"
       >
         <Link to="/">
           <Home size={18} />
-          <span>Back to Home</span>
+          <span>Home</span>
         </Link>
       </Button>
     </div>
