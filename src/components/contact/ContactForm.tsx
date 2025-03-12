@@ -1,6 +1,9 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 interface FormData {
   name: string;
@@ -69,62 +72,62 @@ const ContactForm = () => {
       <h3 className="text-xl font-semibold mb-6 text-slate-800">Send Us a Message</h3>
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-1">
+          <div className="space-y-2">
+            <Label htmlFor="name" className="text-slate-700">
               Your Name
-            </label>
-            <input
+            </Label>
+            <Input
               id="name"
               name="name"
               type="text"
               required
               value={formData.name}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-sleep-500"
+              className="border-slate-200 focus:ring-sleep-500"
             />
           </div>
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-slate-700">
               Your Email
-            </label>
-            <input
+            </Label>
+            <Input
               id="email"
               name="email"
               type="email"
               required
               value={formData.email}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-sleep-500"
+              className="border-slate-200 focus:ring-sleep-500"
             />
           </div>
         </div>
-        <div>
-          <label htmlFor="subject" className="block text-sm font-medium text-slate-700 mb-1">
+        <div className="space-y-2">
+          <Label htmlFor="subject" className="text-slate-700">
             Subject
-          </label>
-          <input
+          </Label>
+          <Input
             id="subject"
             name="subject"
             type="text"
             required
             value={formData.subject}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-sleep-500"
+            className="border-slate-200 focus:ring-sleep-500"
           />
         </div>
-        <div>
-          <label htmlFor="message" className="block text-sm font-medium text-slate-700 mb-1">
+        <div className="space-y-2">
+          <Label htmlFor="message" className="text-slate-700">
             Your Message
-          </label>
-          <textarea
+          </Label>
+          <Textarea
             id="message"
             name="message"
             rows={6}
             required
             value={formData.message}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-sleep-500"
-          ></textarea>
+            className="border-slate-200 focus:ring-sleep-500 resize-none"
+          />
         </div>
         <div>
           <Button 
